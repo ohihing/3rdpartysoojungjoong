@@ -1,9 +1,7 @@
 /**
- * [실시간 동기화 버전] 캐시 삭제 / 실시간 페칭 전용
- * 업데이트 날짜: 2026-03-23
+ * [실시간 1년 필터 버전] 원본 페이지용
  */
-
-const SHEET_ID = '1IKN1Wk27bpFyNYcCv0kjDa_blAe10wMUbMGwt0b2j8Y'; // 수정용 시트 ID
+const SHEET_ID = '1IKN1Wk27bpFyNYcCv0kjDa_blAe10wMUbMGwt0b2j8Y';
 const SHEET_NAME = '마스터_DB';
 const JSON_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
 
@@ -11,28 +9,21 @@ let allBooks = [];
 let currentChannel = 'yes24';
 let currentPage = 'dashboard';
 
-// --- [핵심] 페이지 접속 시 항상 새로 가져오기 ---
 async function init() {
-    // 이전 캐시 찌꺼기들 완전히 삭제 (충돌 방지)
-    localStorage.clear(); 
-    
+    localStorage.clear(); // 찌꺼기 제거
     const updateEl = document.getElementById('update-time');
-    updateEl.innerText = "🔄 실시간 데이터를 불러오는 중...";
+    updateEl.innerText = "🔄 신간 데이터를 실시간으로 불러오는 중...";
     
-    await fetchData();
-}
-
-async function fetchData() {
     try {
         const response = await fetch(JSON_URL);
         const text = await response.text();
         
-        // 시트 공유 설정 확인용 방어 코드
-        if (text.includes("<!DOCTYPE html>") || !text.includes("google.visualization")) {
-            throw new Error("시트 공유 권한이 '링크가 있는 모든 사용자(뷰어)'인지 확인해주세요.");
-        }
-
-        const jsonData = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
+        // 데이터 구조 추출
+        const start = text.indexOf('{');
+        const end = text.lastIndexOf('}');
+        if (start === -1 || end === -1) throw new Error("시트 데이터 형식이 올바르지 않습니다.");
+        
+        const jsonData = JSON.parse(text.substring(start, end + 1));
         
         allBooks = jsonData.table.rows.map(row => {
             const c = row.c;
@@ -46,13 +37,11 @@ async function fetchData() {
             };
         }).filter(b => b.title && b.title !== "null");
 
-        if (allBooks.length === 0) throw new Error("가져온 데이터가 0건입니다. 시트 내용을 확인해주세요.");
-
         render();
         updateTimestamp();
     } catch (e) { 
-        console.error(e);
-        document.getElementById('update-time').innerHTML = `<span style="color:#eb4d4b; font-weight:bold;">⚠️ ${e.message}</span>`;
+        console.error("데이터 로드 실패:", e);
+        updateEl.innerHTML = `<span style="color:#eb4d4b;">⚠️ 로드 실패: 시트 이름이나 컬럼을 확인해주세요.</span>`;
     }
 }
 
@@ -64,10 +53,8 @@ function updateTimestamp() {
         hour: '2-digit', minute: '2-digit', hour12: true
     });
     let formatted = formatter.format(now).replace(/\. /g, '. ').trim();
-    document.getElementById('update-time').innerHTML = `최근 업데이트: ${formatted} (실시간)`;
+    document.getElementById('update-time').innerText = `최근 업데이트: ${formatted} (실시간)`;
 }
-
-// --- 아래 렌더링 및 유틸리티 로직은 기존과 동일 ---
 
 function getStat(val) {
     if (isNaN(val)) return { s: '-', c: 'val-no-change' };
@@ -85,4 +72,84 @@ function parseVal(cell) {
     return typeof cell.v === 'number' ? cell.v : Number(String(cell.v).replace(/,/g, ''));
 }
 
-function toggle
+function toggleMenu() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('open');
+}
+
+function showPage(page) {
+    currentPage = page;
+    document.getElementById('page-title').innerHTML = page === 'dashboard' ? '출판콘텐츠사업단 <span>신간 판매 현황</span>' : '신간 <span>판매지수 현황</span>';
+    document.getElementById('dashboard-view').style.display = page === 'dashboard' ? 'block' : 'none';
+    document.getElementById('stock-view').style.display = page === 'stock' ? 'block' : 'none';
+    if(document.getElementById('sidebar').classList.contains('open')) toggleMenu();
+    render();
+}
+
+function switchChannel(channel) {
+    currentChannel = channel;
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.innerText.includes(channel === 'yes24' ? '예스' : '알라딘')));
+    render();
+}
+
+function render() {
+    const isYes = currentChannel === 'yes24';
+    const prefix = isYes ? 'yes' : 'ala';
+    
+    // [확인] 1년(365일) 이내 출간 도서만 필터링
+    const fresh = allBooks.filter(b => b.openDate && (new Date() - b.openDate) < 365*24*60*60*1000);
+
+    if (currentPage === 'dashboard') {
+        const view = document.getElementById('dashboard-view');
+        view.innerHTML = '';
+        if (fresh.length === 0) {
+            view.innerHTML = '<p style="text-align:center; padding:50px; color:#999;">최근 1년 이내 등록된 도서가 없습니다.</p>';
+            return;
+        }
+        const configs = [
+            { t: '1. 현재 판매지수 Best 10', k: `${prefix}_cur`, type: 'abs', p: '현재', l: 10 },
+            { t: '2. 작일 대비 상승 Best 5', k: `${prefix}_day`, type: 'rise', p: '어제', l: 5 },
+            { t: '3. 작일 대비 하락 도서 5권', k: `${prefix}_day`, type: 'fall', p: '어제', l: 5 },
+            { t: '4. 최근 1주일 상승 Best 5', k: `${prefix}_week`, type: 'rise', p: '1주일', l: 5 },
+            { t: '5. 최근 1주일 하락 도서 5권', k: `${prefix}_week`, type: 'fall', p: '1주일', l: 5 },
+            { t: '6. 최근 1달 상승 Best 5', k: `${prefix}_month`, type: 'rise', p: '한달', l: 5 },
+            { t: '7. 최근 1달 하락 도서 5권', k: `${prefix}_month`, type: 'fall', p: '한달', l: 5 }
+        ];
+        
+        let lastP = "";
+        configs.forEach(conf => {
+            let data = fresh.filter(b => !isNaN(b[conf.k]));
+            if (conf.type === 'rise') data = data.filter(b => b[conf.k] > 0);
+            if (conf.type === 'fall') data = data.filter(b => b[conf.k] < 0);
+            data.sort((a,b) => conf.type === 'fall' ? a[conf.k]-b[conf.k] : b[conf.k]-a[conf.k]);
+            data = data.slice(0, conf.l);
+            
+            if (data.length > 0) {
+                if (conf.p !== lastP) {
+                    view.innerHTML += `<div class="period-divider"><span class="period-badge">${conf.p}</span><div class="period-line"></div></div>`;
+                    lastP = conf.p;
+                }
+                let html = `<section><div class="section-title ${conf.type}">${conf.t}</div>`;
+                data.forEach((b, i) => {
+                    const res = getStat(b[conf.k]);
+                    const valStr = conf.type === 'abs' ? (b[conf.k] ? b[conf.k].toLocaleString() : '0') : res.s;
+                    html += `<div class="book-card"><div class="rank">${i+1}</div><img src="${b.img}" class="book-img" onerror="this.src='https://via.placeholder.com/45x65'"><div class="book-info"><div class="book-title">${b.title}</div><div class="book-val ${conf.type==='abs'?'':res.c}">${valStr}</div></div></div>`;
+                });
+                view.innerHTML += html + `</section>`;
+            }
+        });
+    } else {
+        const view = document.getElementById('stock-view');
+        view.innerHTML = '';
+        if (fresh.length === 0) {
+            view.innerHTML = '<p style="text-align:center; padding:50px; color:#999;">표시할 데이터가 없습니다.</p>';
+            return;
+        }
+        fresh.sort((a,b) => b.openDate - a.openDate).forEach((b, i) => {
+            const d = getStat(b[`${prefix}_day`]), w = getStat(b[`${prefix}_week`]), m = getStat(b[`${prefix}_month`]);
+            view.innerHTML += `<div class="stock-item"><div class="rank">${i+1}</div><div class="book-info"><div class="stock-title">${b.title}</div><div class="stock-date">${b.openDateStr}</div></div><div class="stock-val">${isNaN(b[`${prefix}_cur`]) ? '-' : b[`${prefix}_cur`].toLocaleString()}</div><div class="stock-change-group"><div class="stock-sub-val ${d.c}">${d.s}</div><div class="stock-sub-val" style="font-size:0.6rem; color:#999">주 ${w.s} | 월 ${m.s}</div></div></div>`;
+        });
+    }
+}
+
+init();
