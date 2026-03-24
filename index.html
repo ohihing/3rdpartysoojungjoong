@@ -1,9 +1,11 @@
+---
+---
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>출판콘텐츠사업단 통합 대시보드</title>
+    <title>출판콘텐츠사업단 대시보드</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
     <link rel="stylesheet" href="style.css">
 </head>
@@ -13,37 +15,34 @@
             <span></span><span></span><span></span>
         </div>
         <header>
-            <h1 id="page-title">출판콘텐츠사업단 <span>통합 판매 대시보드</span></h1>
-            <p id="update-time" class="last-update">🔄 데이터 연결 중...</p>
+            <h1 id="page-title">출판콘텐츠사업단 <span>신간 판매 현황</span></h1>
+            <p id="update-time" class="last-update">데이터 로딩 중...</p>
         </header>
     </div>
 
     <nav id="sidebar" class="sidebar">
         <div class="sidebar-header">MENU</div>
         <ul>
-            <li id="m1" onclick="showPage('dashboard')" class="active">🏠 1. 종합 대시보드</li>
-            <li id="m2" onclick="showPage('stock')">📊 2. 신간 판매 현황</li>
+            <li onclick="showPage('dashboard')">🏠 1. 종합 대시보드</li>
+            <li onclick="showPage('stock')">📊 2. 신간 판매 현황</li>
         </ul>
-        <div class="sidebar-footer">© 2026 북다/교보문고</div>
     </nav>
 
     <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
 
     <div class="container">
+        <nav class="metric-wrapper">
+            <button class="metric-btn active" onclick="switchMetric('index')">📈 판매지수 조회</button>
+            <button class="metric-btn" onclick="switchMetric('sales')">📚 판매량 조회</button>
+        </nav>
+
         <nav class="tab-wrapper">
             <button class="tab-btn active" onclick="switchChannel('yes24')">예스24</button>
             <button class="tab-btn" onclick="switchChannel('aladin')">알라딘</button>
         </nav>
 
         <main id="dashboard-view" class="page-view"></main>
-
-        <main id="stock-view" class="page-view" style="display:none;">
-            <div class="view-switcher">
-                <button class="switch-btn active" onclick="switchP2View('index')">판매지수 뷰</button>
-                <button class="switch-btn" onclick="switchP2View('sales')">판매부수 뷰</button>
-            </div>
-            <div id="stock-list-content"></div>
-        </main>
+        <main id="stock-view" class="page-view" style="display:none;"></main>
     </div>
     <script src="script.js"></script>
 </body>
