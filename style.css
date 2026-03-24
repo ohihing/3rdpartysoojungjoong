@@ -4,7 +4,7 @@
     --bg-gray: #f5f6fa;
 }
 
-body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-gray); margin: 0; padding: 0; overflow-x: hidden; }
+body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-gray); margin: 0; padding: 0; overflow-x: hidden; transition: background-color 0.3s; }
 
 /* 헤더 영역 */
 .header-area { position: relative; padding: 30px 20px; text-align: center; background: white; border-bottom: 1px solid #eee; }
@@ -13,7 +13,7 @@ body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-gray); 
 
 header h1 { font-size: 1.6rem; font-weight: 800; margin: 0; letter-spacing: -1px; }
 header h1 span { color: #888; font-size: 1.1rem; display: block; margin-top: 2px; }
-.last-update { font-size: 0.75rem; color: #bbb; margin-top: 8px; font-weight: 500; }
+.last-update { font-size: 0.8rem; color: #888; margin-top: 8px; font-weight: 600; }
 
 /* 사이드바 */
 .sidebar {
@@ -33,26 +33,22 @@ header h1 span { color: #888; font-size: 1.1rem; display: block; margin-top: 2px
 
 .container { max-width: 800px; margin: 0 auto; padding: 20px; padding-bottom: 50px; }
 
-/* 신규: 지수/판매량 스위치 */
-.metric-wrapper { display: flex; gap: 8px; margin-bottom: 15px; }
-.metric-btn { flex: 1; border: 1px solid #ddd; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; background: white; color: #777; transition: 0.2s; }
-.metric-btn.active { background: #333; color: white; border-color: #333; box-shadow: 0 3px 8px rgba(0,0,0,0.2); }
-
-/* 서점 탭 */
-.tab-wrapper { display: flex; gap: 8px; margin-bottom: 25px; background: #e0e0e0; padding: 4px; border-radius: 12px; }
-.tab-btn { flex: 1; border: none; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; background: transparent; color: #666; }
-.tab-btn.active { background: white; color: #000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+/* 탭 및 스위치 (동일 디자인 적용) */
+.tab-wrapper { display: flex; gap: 8px; margin-bottom: 15px; background: #e0e0e0; padding: 4px; border-radius: 12px; }
+.tab-btn, .metric-btn { flex: 1; border: none; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; background: transparent; color: #666; transition: 0.2s; }
+.tab-btn.active, .metric-btn.active { background: white; color: #000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
 /* 도서 카드 */
 .book-card { background: white; padding: 15px; border-radius: 12px; display: flex; align-items: center; margin-bottom: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
 .rank { font-weight: 800; width: 30px; color: #ccc; }
 .book-img { width: 45px; height: 65px; border-radius: 4px; margin-right: 15px; object-fit: cover; }
-.book-info { flex: 1; min-width: 0; }
-.book-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.book-val { font-weight: 800; text-align: right; min-width: 80px; font-size: 1.1rem; }
+.book-info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
+.book-title { font-weight: 700; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sub-val { font-size: 0.75rem; color: #999; } /* 회색 작은 글씨 서브 텍스트 */
+.book-val { font-weight: 800; text-align: right; min-width: 80px; font-size: 1.1rem; color: #222; }
 
 /* 주식형 뷰 (신간 현황) */
-.stock-item { background: white; padding: 15px; border-bottom: 1px solid #eee; display: grid; grid-template-columns: 35px 1fr 80px 100px; align-items: center; }
+.stock-item { background: white; padding: 15px; border-bottom: 1px solid #eee; display: grid; grid-template-columns: 35px 1fr 80px 110px; align-items: center; }
 .stock-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 2px; }
 .stock-date { font-size: 0.65rem; color: #bbb; font-weight: 400; }
 .stock-val { text-align: right; font-weight: 800; font-size: 1.05rem; }
@@ -62,17 +58,13 @@ header h1 span { color: #888; font-size: 1.1rem; display: block; margin-top: 2px
 .val-rise { color: var(--yes-red); }
 .val-fall { color: var(--ala-blue); }
 .val-no-change { color: #bbb; }
-.val-qty { color: #d35400; } /* 판매량 전용 컬러 (주황) */
 
-.section-title { font-size: 1.1rem; font-weight: 800; margin: 30px 0 15px; padding-left: 10px; border-left: 4px solid #333; }
-.section-title.rise { border-color: var(--yes-red); color: var(--yes-red); }
-.section-title.fall { border-color: var(--ala-blue); color: var(--ala-blue); }
-.section-title.qty { border-color: #d35400; color: #d35400; }
+.section-title { font-size: 1.1rem; font-weight: 800; margin: 30px 0 15px; padding-left: 10px; border-left: 4px solid #333; color: #222; }
 
 .period-divider { display: flex; align-items: center; margin: 40px 0 20px; }
 .period-badge { background: #333; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; margin-right: 10px; }
 .period-line { flex: 1; height: 1px; background: #ddd; }
 
 @media (max-width: 650px) {
-    .stock-item { grid-template-columns: 30px 1fr 70px 85px; padding: 12px; }
+    .stock-item { grid-template-columns: 30px 1fr 70px 95px; padding: 12px; }
 }
