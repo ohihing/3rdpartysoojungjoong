@@ -68,4 +68,3 @@ header h1 span { color: var(--text-gray); font-size: 1rem; display: block; margi
 
 @media (max-width: 650px) {
     .stock-item { grid-template-columns: 30px 1fr 90px 80px; padding: 12px; }
-}
