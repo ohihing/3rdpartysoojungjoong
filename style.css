@@ -2,9 +2,10 @@
     --yes-red: #eb4d4b;
     --ala-blue: #0984e3;
     --bg-gray: #f5f6fa;
+    --sales-gray: #cbd5e1; /* 판매량 조회 시 버튼(#e0e0e0)보다 짙은 그레이 배경색 */
 }
 
-body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-gray); margin: 0; padding: 0; overflow-x: hidden; transition: background-color 0.3s; }
+body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-gray); margin: 0; padding: 0; overflow-x: hidden; transition: background-color 0.3s ease-in-out; }
 
 /* 헤더 영역 */
 .header-area { position: relative; padding: 30px 20px; text-align: center; background: white; border-bottom: 1px solid #eee; }
@@ -33,10 +34,14 @@ header h1 span { color: #888; font-size: 1.1rem; display: block; margin-top: 2px
 
 .container { max-width: 800px; margin: 0 auto; padding: 20px; padding-bottom: 50px; }
 
-/* 탭 및 스위치 (동일 디자인 적용) */
+/* 탭 및 스위치 공통 */
 .tab-wrapper { display: flex; gap: 8px; margin-bottom: 15px; background: #e0e0e0; padding: 4px; border-radius: 12px; }
-.tab-btn, .metric-btn { flex: 1; border: none; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; background: transparent; color: #666; transition: 0.2s; }
-.tab-btn.active, .metric-btn.active { background: white; color: #000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.tab-btn, .metric-btn, .sub-btn { flex: 1; border: none; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; background: transparent; color: #666; transition: 0.2s; }
+.tab-btn.active, .metric-btn.active, .sub-btn.active { background: white; color: #000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+/* 교보 서브 탭 전용 (조금 작고 타이트하게 구성) */
+.sub-wrapper { background: #d1d5db; margin-top: -8px; margin-bottom: 20px; }
+.sub-btn { padding: 8px; font-size: 0.85rem; }
 
 /* 도서 카드 */
 .book-card { background: white; padding: 15px; border-radius: 12px; display: flex; align-items: center; margin-bottom: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
@@ -44,7 +49,7 @@ header h1 span { color: #888; font-size: 1.1rem; display: block; margin-top: 2px
 .book-img { width: 45px; height: 65px; border-radius: 4px; margin-right: 15px; object-fit: cover; }
 .book-info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
 .book-title { font-weight: 700; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sub-val { font-size: 0.75rem; color: #999; } /* 회색 작은 글씨 서브 텍스트 */
+.sub-val { font-size: 0.75rem; color: #999; }
 .book-val { font-weight: 800; text-align: right; min-width: 80px; font-size: 1.1rem; color: #222; }
 
 /* 주식형 뷰 (신간 현황) */
@@ -60,10 +65,6 @@ header h1 span { color: #888; font-size: 1.1rem; display: block; margin-top: 2px
 .val-no-change { color: #bbb; }
 
 .section-title { font-size: 1.1rem; font-weight: 800; margin: 30px 0 15px; padding-left: 10px; border-left: 4px solid #333; color: #222; }
-
-.period-divider { display: flex; align-items: center; margin: 40px 0 20px; }
-.period-badge { background: #333; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; margin-right: 10px; }
-.period-line { flex: 1; height: 1px; background: #ddd; }
 
 @media (max-width: 650px) {
     .stock-item { grid-template-columns: 30px 1fr 70px 95px; padding: 12px; }
