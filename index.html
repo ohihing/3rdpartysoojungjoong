@@ -13,7 +13,7 @@
             <span></span><span></span><span></span>
         </div>
         <header>
-            <h1 id="page-title">출판콘텐츠사업단 <span>신간 판매 현황</span></h1>
+            <h1 id="page-title">출판콘텐츠사업단 <span>종합 대시보드</span></h1>
             <p class="last-update">조회 시점 기준 출간 1년 이하인 신간도서만 대상</p>
         </header>
     </div>
@@ -29,14 +29,22 @@
     <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
 
     <div class="container">
-        <nav class="tab-wrapper">
-            <button class="metric-btn active" onclick="switchMetric('index')">판매지수 조회</button>
-            <button class="metric-btn" onclick="switchMetric('sales')">판매량 조회</button>
+        <nav class="tab-wrapper metric-wrapper">
+            <button id="m-btn-index" class="metric-btn active" onclick="switchMetric('index')">판매지수 조회</button>
+            <button id="m-btn-sales" class="metric-btn" onclick="switchMetric('sales')">판매량 조회</button>
         </nav>
 
-        <nav class="tab-wrapper">
+        <nav class="tab-wrapper channel-wrapper">
             <button class="tab-btn active" onclick="switchChannel('yes24')">예스24</button>
             <button class="tab-btn" onclick="switchChannel('aladin')">알라딘</button>
+            <button class="tab-btn" onclick="switchChannel('kyobo')">교보문고</button>
+        </nav>
+
+        <nav id="kyobo-sub-tab" class="tab-wrapper sub-wrapper" style="display:none;">
+            <button class="sub-btn" onclick="switchKyoSub('store')">매장</button>
+            <button class="sub-btn" onclick="switchKyoSub('online')">인터넷</button>
+            <button class="sub-btn" onclick="switchKyoSub('whole')">도매</button>
+            <button class="sub-btn active" onclick="switchKyoSub('total')">누적</button>
         </nav>
 
         <main id="dashboard-view" class="page-view"></main>
